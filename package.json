@@ -1,0 +1,13 @@
+{
+  "name": "kalkulator-punktow-wzon",
+  "version": "1.1.0",
+  "private": true,
+  "description": "Kalkulator punktów WZON 2026 – statyczna strona (bez serwera). Ten plik służy tylko do zbudowania assets/app.css.",
+  "scripts": {
+    "build:css": "tailwindcss -i src/styles.css -o assets/app.css --minify"
+  },
+  "devDependencies": {
+    "@tailwindcss/cli": "4.1.18",
+    "tailwindcss": "4.1.18"
+  }
+}

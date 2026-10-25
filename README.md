@@ -28,31 +28,54 @@ Bezpłatna, jednoplikowa aplikacja internetowa (`index.html`) dla osób z niepe�
 
 ## Konfiguracja przed publikacją
 
-Otwórz `index.html`, znajdź blok `const CONFIG = {` i uzupełnij:
+Otwórz `assets/app.js`, znajdź blok `const CONFIG = Object.freeze({` i uzupełnij (linki tylko `https://`, inne są ignorowane; nie wpisuj tam haseł ani kluczy):
 
 ```js
-const CONFIG = {
+const CONFIG = Object.freeze({
   siteUrl: 'https://kalkulatorwzon.pl/',
   contactEmail: 'kontakt@twojadomena.pl',
   buyCoffeeUrl: 'https://buycoffee.to/twoja-nazwa',
-  blikPhone: '500 600 700',
-  blikRecipient: 'Imię Nazwisko',
+  blikPhone: '',                // zalecane: puste (numer telefonu byłby publiczny)
+  blikRecipient: '',
   paymentLink: '',              // opcjonalnie: Stripe Payment Link / Przelewy24 z BLIK
   suggestedAmount: '19,99 zł',
   allowFreeDownload: true,
-  partner: { name: '', url: '', phone: '', pitch: '' }
-};
+  partner: Object.freeze({ name: '', url: '', phone: '', pitch: '' })
+});
 ```
+
+Po każdej zmianie w `assets/app.js` lub `assets/app.css` zmień numer `?v=` w dwóch linijkach w `<head>` pliku `index.html` (np. `?v=20261101`), aby przeglądarki pobrały nową wersję.
 
 Jeżeli żadna metoda płatności nie jest uzupełniona, PDF pobiera się od razu, bez okna wsparcia.
 
-**Domena:** adres `https://kalkulatorwzon.pl/` występuje w `index.html` (canonical, og:url, og:image, JSON-LD, `CONFIG.siteUrl`), `robots.txt` i `sitemap.xml`. Po zakupie innej domeny zamień go wszędzie (Szukaj → Zamień wszystko).
+**Domena:** adres `https://kalkulatorwzon.pl/` występuje w `index.html` (canonical, og:url, og:image, JSON-LD), `assets/app.js` (`CONFIG.siteUrl`), `robots.txt` i `sitemap.xml`. Po zakupie innej domeny zamień go wszędzie (Szukaj → Zamień wszystko).
 
-## Publikacja (GitHub Pages)
+## Struktura plików
 
+| Plik | Rola |
+|---|---|
+| `index.html` | Treść strony, SEO, JSON-LD, polityka bezpieczeństwa (CSP) |
+| `assets/app.js` | Cała logika (obliczenia, terminy, PDF, konfiguracja `CONFIG`) |
+| `assets/app.css` | Skompilowany Tailwind CSS (nie edytuj ręcznie) |
+| `assets/vendor/` | pdfmake 0.2.20 (lokalnie, z hashem SRI) |
+| `src/styles.css` | Źródło stylów → `npm run build:css` |
+| `_headers` | Nagłówki bezpieczeństwa dla Cloudflare Pages / Netlify |
+| `BEZPIECZENSTWO.md` | Opis zabezpieczeń i lista kontrolna właściciela |
+
+## Publikacja
+
+**Zalecane: Cloudflare Pages** (bezpłatnie, działa też z prywatnym repozytorium, odczytuje `_headers` z pełnymi nagłówkami bezpieczeństwa):
+1. dash.cloudflare.com → Workers & Pages → Create → Pages → Connect to Git → wybierz repozytorium.
+2. Framework preset: *None*, Build command: *(puste)*, Build output directory: `/`.
+3. Deploy → Custom domains → dodaj swoją domenę.
+
+**Alternatywa: GitHub Pages** (wymaga publicznego repozytorium w darmowym planie):
 1. Repozytorium → **Settings → Pages** → Source: *Deploy from a branch* → Branch: `main`, folder `/ (root)` → **Save**.
-2. Po ok. 1–2 minutach strona działa pod adresem `https://<login>.github.io/<nazwa-repozytorium>/`.
-3. Własna domena: w polu **Custom domain** wpisz domenę, u rejestratora ustaw rekordy DNS według [dokumentacji GitHub Pages](https://docs.github.com/pages/configuring-a-custom-domain-for-your-github-pages-site), zaznacz **Enforce HTTPS**.
+2. Własna domena: w polu **Custom domain** wpisz domenę, ustaw rekordy DNS według [dokumentacji GitHub Pages](https://docs.github.com/pages/configuring-a-custom-domain-for-your-github-pages-site), zaznacz **Enforce HTTPS** i zweryfikuj domenę.
+
+## Bezpieczeństwo
+
+Strona nie ma serwera, bazy danych ani kluczy API i nie łączy się z żadnym zewnętrznym serwerem. Ścisła polityka CSP, lokalne biblioteki z SRI, blokada osadzania w ramce, walidacja danych zapisanych w przeglądarce, przechowywanie domyślnie tylko w bieżącej karcie, PESEL nigdy nie zapisywany. Szczegóły i **obowiązkowa lista kontrolna właściciela (2FA, domena, płatności)**: [BEZPIECZENSTWO.md](BEZPIECZENSTWO.md).
 
 ## Testy
 
@@ -87,8 +110,8 @@ A free, single-file web app (`index.html`, in Polish) for people with disabiliti
 ### Configure & deploy
 Fill in the `CONFIG` object at the top of the script in `index.html` (contact e-mail, BuyCoffee.to URL, BLIK phone number, optional payment link, partner law firm), replace `https://kalkulatorwzon.pl/` with your domain in `index.html`, `robots.txt` and `sitemap.xml`, then enable **GitHub Pages** (Settings → Pages → branch `main`, root).
 
-### Tech
-HTML5, Tailwind CSS (browser build 4.1.18 via jsDelivr, SRI-pinned), vanilla JavaScript, pdfmake 0.2.20 (lazy-loaded, Roboto font with full Polish character support).
+### Tech & security
+HTML5, Tailwind CSS 4.1.18 (compiled to `assets/app.css`), vanilla JavaScript (`assets/app.js`), pdfmake 0.2.20 (self-hosted in `assets/vendor/`, SRI-pinned, lazy-loaded, Roboto font with full Polish character support). No third-party requests, strict Content-Security-Policy (`script-src 'self'`), anti-framing, validated browser storage (session-only by default, PESEL never stored), `_headers` for Cloudflare Pages / Netlify. See [BEZPIECZENSTWO.md](BEZPIECZENSTWO.md) for the owner security checklist.
 
 ### Disclaimer
 Independent project, not affiliated with WZON, ZUS or the Polish government. Informational tool, not legal advice. Legal status: October 2026.

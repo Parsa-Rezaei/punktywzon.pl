@@ -1,0 +1,34 @@
+/* Źródło stylów. Po każdej zmianie klas w index.html lub assets/app.js uruchom:
+   npm ci && npm run build:css
+   Wynik trafia do assets/app.css (plik serwowany na stronie). */
+@import "tailwindcss" source(none);
+@source "../index.html";
+@source "../assets/app.js";
+
+@layer base {
+  *, ::after, ::before, ::backdrop, ::file-selector-button { border-color: var(--color-slate-200, currentColor); }
+}
+
+html { scroll-behavior: smooth; }
+dialog { margin: auto; }
+.hidden { display: none !important; }
+html.font-big { font-size: 118.75%; }
+body { background: #f8fafc; color: #0f172a; }
+:focus-visible { outline: 3px solid #f59e0b; outline-offset: 2px; }
+select, input, textarea { font-size: 1rem; }
+dialog::backdrop { background: rgba(15, 23, 42, .55); }
+.row-top { background: #ecfdf5; border-color: #6ee7b7; }
+.row-out { background: #f1f5f9; border-color: #cbd5e1; }
+.row-out .act-name { color: #64748b; }
+.bar { height: .65rem; border-radius: 999px; }
+details > summary { cursor: pointer; }
+/* Tryb wysokiego kontrastu */
+html.hc body { background: #fff !important; color: #000 !important; }
+html.hc .hc-card, html.hc section, html.hc .row-top, html.hc .row-out { background: #fff !important; border-color: #000 !important; color: #000 !important; }
+html.hc .text-slate-500, html.hc .text-slate-600, html.hc .text-slate-700, html.hc .act-name { color: #000 !important; }
+html.hc a { text-decoration: underline; }
+html.hc .row-top { outline: 3px solid #047857; }
+@media print {
+  .no-print { display: none !important; }
+  body { background: #fff; }
+}
