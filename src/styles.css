@@ -1,9 +1,9 @@
-/* Źródło stylów. Po każdej zmianie klas w index.html lub assets/app.js uruchom:
+/* Źródło stylów. Po każdej zmianie klas w public/index.html lub public/assets/app.js uruchom:
    npm ci && npm run build:css
-   Wynik trafia do assets/app.css (plik serwowany na stronie). */
+   Wynik trafia do public/assets/app.css (plik serwowany na stronie). */
 @import "tailwindcss" source(none);
-@source "../index.html";
-@source "../assets/app.js";
+@source "../public/index.html";
+@source "../public/assets/app.js";
 
 @layer base {
   *, ::after, ::before, ::backdrop, ::file-selector-button { border-color: var(--color-slate-200, currentColor); }
@@ -32,3 +32,6 @@ html.hc .row-top { outline: 3px solid #047857; }
   .no-print { display: none !important; }
   body { background: #fff; }
 }
+/* Zablokowany podgląd wniosku – szare paski zamiast treści (treść płatnego dokumentu nie trafia do strony) */
+.locked-bar { display: block; height: .7rem; border-radius: 999px; background: #cbd5e1; margin: .55rem 0; }
+.locked-bar.w-90 { width: 90%; } .locked-bar.w-75 { width: 75%; } .locked-bar.w-60 { width: 60%; } .locked-bar.w-40 { width: 40%; }
